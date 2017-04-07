@@ -9,6 +9,8 @@ NASDAQ100 = load('datasets/NASDAQ100.mat');
 NASDAQComp = load('datasets/NASDAQComp.mat');
 SP500 = load('datasets/SP500.mat');
 
+save('weeklyReturnsData.mat', 'DowJones', 'FF49Industries', 'FTSE100', 'NASDAQ100', 'NASDAQComp', 'SP500'); 
+
 %% Plot each market asset returns
 figure(1);
 suptitle('Market Assets Returns')
@@ -64,3 +66,13 @@ title('NASDAQ Comp');
 subplot(2,3,6);
 plot(SP500.Index_Returns);
 title('SP500');
+
+%% FF49 Asset Allocation
+CZeSD_FF49_reb = load('solutions\FF49Industries\OptPortfolios_CZeSD_FF49Industries');
+CZeSD_FF49_reb = CZeSD_FF49_reb.temp_mat;
+
+CZeSD_FF49_list = load('solutions\FF49Industries\OutofSamplePortReturns_CZeSD_FF49Industries_List');
+CZeSD_FF49_list = CZeSD_FF49_list.temp_mat;
+
+CZeSD_FF49_mat = load('solutions\FF49Industries\OutofSamplePortReturns_CZeSD_FF49Industries_Matr');
+CZeSD_FF49_mat = CZeSD_FF49_mat.temp_mat;

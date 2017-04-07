@@ -3,7 +3,8 @@ clear;
 clc; 
 DIR_NAME = 'solutions\SP500\';
 text_ext = strcat(DIR_NAME, '*.txt');
-files = dir(text_ext);      
+files = dir(text_ext);
+
 
 %% Convert
 
