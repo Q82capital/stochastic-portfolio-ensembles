@@ -2,11 +2,6 @@
 clc;
 clear all;
 close all;
-Markets = load('Data/MarketReturns.mat');
+
+Markets = load('Data/Markets.mat');
 Models = load('Data/Models.mat');
-
-%% Model Development
-
-
-
-
