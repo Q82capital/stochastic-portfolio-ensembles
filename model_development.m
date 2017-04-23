@@ -32,5 +32,20 @@ for i = 1:nWindows
     windowSharpe(i, :) = sharpe(ModelReturns(startWeek:endWeek, :), RiskFreeReturns(startWeek:endWeek, :));
 end
 
+%% Calculate Alpha
 
- 
+% NOTE: using Jensen index 
+for i = 1:nWindows
+    startWeek = (i-1) * windowSize + 1;
+    endWeek = startWeek + 11;
+    windowAlpha(i, :) = portalpha(ModelReturns(startWeek:endWeek, :), IndexReturns(startWeek:endWeek, :), RiskFreeReturns(startWeek:endWeek, :), 'capm');
+end
+
+%% Calculate S.D. 
+
+for i = 1:nWindows
+    startWeek = (i-1) * windowSize + 1;
+    endWeek = startWeek + 11;
+    windowStd(i, :) = std(ModelReturns(startWeek:endWeek, :));
+end
+
