@@ -49,3 +49,43 @@ for i = 1:nWindows
     windowStd(i, :) = std(ModelReturns(startWeek:endWeek, :));
 end
 
+ %% Calculate R-Squared
+windowRSquared = zeros(nWindows, nModels);
+
+for i = 1:nWindows
+    startWeek = (i-1) * windowSize + 1;
+    endWeek = startWeek + 11;
+    
+    for j = 1:nModels
+        windowRSquared(i,j) = max(0,1 - sum((ModelReturns(startWeek:endWeek, j)-IndexReturns(startWeek:endWeek)).^2)/sum((ModelReturns(startWeek:endWeek, j)-mean(ModelReturns(startWeek:endWeek, j))).^2));
+    end
+    
+end
+
+%% Calculate Beta
+windowBeta = zeros(nWindows, nModels);
+
+for i = 1:nWindows
+    startWeek = (i-1) * windowSize + 1;
+    endWeek = startWeek + 11;
+    
+    for j = 1:nModels
+           calcRegStats = regstats(ModelReturns(startWeek:endWeek, j), IndexReturns(startWeek:endWeek));
+           volBeta = calcRegStats.beta;
+           windowBeta(i,j) = volBeta(2, 1);
+    end
+    
+end
+
+%% Put together all predictors and and reponses
+
+predictors = [windowAlpha, windowBeta, windowStd, windowRSquared, windowSharpe];
+predictors = predictors(1:length(predictors)-1, :); % remove last row
+
+for i = 1:nWindows-1
+    response(i, :) = windowAlpha(i+1,:);
+end
+
+allData = [predictors, response];
+
+
