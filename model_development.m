@@ -57,7 +57,7 @@ for i = 1:nWindows
     endWeek = startWeek + 11;
     
     for j = 1:nModels
-        windowRSquared(i,j) = max(0,1 - sum((ModelReturns(startWeek:endWeek, j)-IndexReturns(startWeek:endWeek)).^2)/sum((ModelReturns(startWeek:endWeek, j)-mean(ModelReturns(startWeek:endWeek, j))).^2));
+        windowRSquared(i,j) = max(0,1 - sum((IndexReturns(startWeek:endWeek)-ModelReturns(startWeek:endWeek, j)).^2)/sum((IndexReturns(startWeek:endWeek)-mean(IndexReturns(startWeek:endWeek))).^2));
     end
     
 end
