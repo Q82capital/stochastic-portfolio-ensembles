@@ -86,6 +86,52 @@ for i = 1:nWindows-1
     response(i, :) = windowAlpha(i+1,:);
 end
 
+%% Divide into train and test
+
 allData = [predictors, response];
 
+trainData = allData(1:31, :);
+trainPred = trainData(:, 1:30);
+trainResp = trainData(:, 31:end);
+
+testData = allData (32:end, :);
+testPred = testData(:, 1:30);
+testResp = testData(:, 31:end);
+
+%% Initialize NN
+hiddenLayerNodes = 20;
+fractionVal = .1;
+maxEpochs = 10;
+
+net = patternnet(hiddenLayerNodes);
+net.divideFcn = 'dividerand';
+net.divideParam.valRatio = fractionVal;
+net.divideParam.trainRatio = 1-fractionVal;
+net.divideParam.testRatio = 0;
+net.trainParam.epochs = maxEpochs; 
+
+[net, tr] = train(net, transpose(trainPred), transpose(trainResp), 'useParallel','yes');
+neuralNetPredictions = transpose(net(transpose(testPred)));
+
+%% Calculate best model
+
+for i = 1:length(neuralNetPredictions)
+    [tempMax, bestModelIndex(i , 1)] = max(neuralNetPredictions(i, :));
+end
+
+%% Calculate Average Yearly Returns
+fullModelReturns = 1 + ModelReturns;
+ourModelReturn = 1.00;
+
+currentWindow = 1;
+
+for i = 1:13
+    ourModelReturn = ourModelReturn * fullModelReturns(i, 1);
+    
+    if rem(i, windowSize) == 0
+        currentWindow = currentWindow + 1;
+    end    
+end
+
+ourModelReturn = nthroot(ourModelReturn, nYears)
 
