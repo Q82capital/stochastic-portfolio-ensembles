@@ -97,11 +97,14 @@ trainResp = trainData(:, 31:end);
 testData = allData (32:end, :);
 testPred = testData(:, 1:30);
 testResp = testData(:, 31:end);
-
 %% Initialize NN
-hiddenLayerNodes = 20;
-fractionVal = .1;
-maxEpochs = 10;
+
+winnerCount = 0;
+for i = 1:100
+
+hiddenLayerNodes = 50;
+fractionVal = .25;
+maxEpochs = 100;
 
 net = patternnet(hiddenLayerNodes);
 net.divideFcn = 'dividerand';
@@ -119,19 +122,63 @@ for i = 1:length(neuralNetPredictions)
     [tempMax, bestModelIndex(i , 1)] = max(neuralNetPredictions(i, :));
 end
 
-%% Calculate Average Yearly Returns
+%% Calculate Average Yearly Test Returns
 fullModelReturns = 1 + ModelReturns;
-ourModelReturn = 1.00;
+fullIndexReturns = 1 + IndexReturns;
+
+darkAlphaReturn = 1.00;
+CZeSD_testRet = 1.00;
+KP_SSD_testRet = 1.00;
+L_SSD_testRet = 1.00;
+LR_ASSD_testRet = 1.00;
+MeanVar_testRet = 1.00;
+RMZ_SSD_testRet = 1.00;
+SP500_testRet = 1.00;
 
 currentWindow = 1;
+startTestWindow = 32;
+startTestWeek = (startTestWindow-1) * windowSize + 1;
 
-for i = 1:13
-    ourModelReturn = ourModelReturn * fullModelReturns(i, 1);
+darkAlphaPortChoice = 1;
+
+for i = startTestWeek:nWeeks - 12;
+    CZeSD_testRet = CZeSD_testRet * fullModelReturns(i,1);
+    KP_SSD_testRet = KP_SSD_testRet * fullModelReturns(i,2);
+    L_SSD_testRet = L_SSD_testRet * fullModelReturns(i,3);
+    LR_ASSD_testRet = LR_ASSD_testRet * fullModelReturns(i,4);
+    MeanVar_testRet = MeanVar_testRet * fullModelReturns(i,5);
+    RMZ_SSD_testRet = RMZ_SSD_testRet * fullModelReturns(i,6);
+    SP500_testRet = SP500_testRet * fullIndexReturns(i, 1); 
     
+    % Choose portfolio
+    darkAlphaPortChoice = bestModelIndex(currentWindow, 1);
+    darkAlphaReturn = darkAlphaReturn * fullModelReturns(i, darkAlphaPortChoice);    
+    
+    % Increment window
     if rem(i, windowSize) == 0
         currentWindow = currentWindow + 1;
-    end    
+    end
+    
 end
 
-ourModelReturn = nthroot(ourModelReturn, nYears)
+fprintf('Our models return was %.4f per year \n', nthroot(darkAlphaReturn, 3) - 1);
+fprintf('Index return was %.4f per year \n', nthroot(SP500_testRet, 3) - 1);
+fprintf('CZeSD return was %.4f per year \n', nthroot(CZeSD_testRet, 3) - 1);
+fprintf('KP_SSD return was %.4f per year \n', nthroot(KP_SSD_testRet, 3) - 1);
+fprintf('L_SSD return was %.4f per year \n', nthroot(L_SSD_testRet, 3) - 1);
+fprintf('MeanVar return was %.4f per year \n', nthroot(MeanVar_testRet, 3) - 1);
+fprintf('RMZ_SSD return was %.4f per year \n', nthroot(RMZ_SSD_testRet, 3) - 1);
+% 
+% disp(bestModelIndex);
+
+
+if nthroot(darkAlphaReturn, 3) - 1 > .20
+    disp(bestModelIndex);
+    winnerCount = winnerCount + 1;
+end
+
+end 
+
+disp('We beat all startegies AND index %.2f percent of the time', winnerCount);
+
 
