@@ -17,9 +17,11 @@ nWindows = nWeeks/windowSize;
  
 [features, windowAlpha] = calc_features(ModelReturns, IndexReturns, nWeeks, nWindows, windowSize, nModels); 
 
-for i = 1:nWindows-1
-    response(i, :) = windowAlpha(i+1,:);
-end
+%% Calculate the reponse variable
+
+% Set the minimum alpha per WEEK you would like to train the model on
+weekMinAlpha = .01;
+response = calc_response(windowAlpha, nWindows, nModels);
 
 %% Divide into train and test
 
@@ -33,9 +35,6 @@ testData = allData (32:end, :);
 testPred = testData(:, 1:30);
 testResp = testData(:, 31:end);
 %% Initialize NN
-
-winnerCount = 0;
-for i = 1:100
 
 hiddenLayerNodes = 50;
 fractionVal = .25;
@@ -103,17 +102,7 @@ fprintf('KP_SSD return was %.4f per year \n', nthroot(KP_SSD_testRet, 3) - 1);
 fprintf('L_SSD return was %.4f per year \n', nthroot(L_SSD_testRet, 3) - 1);
 fprintf('MeanVar return was %.4f per year \n', nthroot(MeanVar_testRet, 3) - 1);
 fprintf('RMZ_SSD return was %.4f per year \n', nthroot(RMZ_SSD_testRet, 3) - 1);
-% 
-% disp(bestModelIndex);
 
 
-if nthroot(darkAlphaReturn, 3) - 1 > .20
-    disp(bestModelIndex);
-    winnerCount = winnerCount + 1;
-end
-
-end 
-
-disp('We beat all startegies AND index %.2f percent of the time', winnerCount);
 
 
