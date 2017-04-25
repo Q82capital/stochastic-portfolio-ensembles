@@ -2,17 +2,10 @@ function [ features, windowAlpha ] = calc_features( ModelReturns, IndexReturns, 
 % Calculate all predictors for the model
 %   Detailed explanation goes here
 
-%% Calculate Sharpe 
 
 % Assumed constant 3% risk-free return on cash (see [Bridgewater] )
 weeklyCashReturn = nthroot(1.03, 52) - 1;
 RiskFreeReturns = ones(nWeeks, 1) * weeklyCashReturn;
-
-for i = 1:nWindows
-    startWeek = (i-1) * windowSize + 1;
-    endWeek = startWeek + 11;
-    windowSharpe(i, :) = sharpe(ModelReturns(startWeek:endWeek, :), RiskFreeReturns(startWeek:endWeek, :));
-end
 
 %% Calculate Alpha
 
@@ -23,7 +16,22 @@ for i = 1:nWindows
     windowAlpha(i, :) = portalpha(ModelReturns(startWeek:endWeek, :), IndexReturns(startWeek:endWeek, :), RiskFreeReturns(startWeek:endWeek, :), 'capm');
 end
 
-%% Calculate S.D. 
+%% Calculate Beta
+windowBeta = zeros(nWindows, nModels);
+
+for i = 1:nWindows
+    startWeek = (i-1) * windowSize + 1;
+    endWeek = startWeek + 11;
+    
+    for j = 1:nModels
+           calcRegStats = regstats(ModelReturns(startWeek:endWeek, j), IndexReturns(startWeek:endWeek));
+           volBeta = calcRegStats.beta;
+           windowBeta(i,j) = volBeta(2, 1);
+    end
+    
+end
+
+%% Calculate Standard Deviation
 
 for i = 1:nWindows
     startWeek = (i-1) * windowSize + 1;
@@ -44,20 +52,13 @@ for i = 1:nWindows
     
 end
 
-%% Calculate Beta
-windowBeta = zeros(nWindows, nModels);
-
+%% Calculate Sharpe 
 for i = 1:nWindows
     startWeek = (i-1) * windowSize + 1;
     endWeek = startWeek + 11;
-    
-    for j = 1:nModels
-           calcRegStats = regstats(ModelReturns(startWeek:endWeek, j), IndexReturns(startWeek:endWeek));
-           volBeta = calcRegStats.beta;
-           windowBeta(i,j) = volBeta(2, 1);
-    end
-    
+    windowSharpe(i, :) = sharpe(ModelReturns(startWeek:endWeek, :), RiskFreeReturns(startWeek:endWeek, :));
 end
+
 
 %% Put together all predictors and and reponses
 

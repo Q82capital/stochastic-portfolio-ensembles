@@ -3,18 +3,21 @@ clc;
 clear all;
 close all;
 
+% Load Data
 load('Data/IndexReturns.mat'); 
 load('Data/ModelReturns.mat'); 
 
-% Program Constants
+% Set Program Constants
 nWeeks = size(ModelReturns, 1);
 nModels = size(ModelReturns, 2);
 windowSize = 12;
 nYears = 12;
 nWindows = nWeeks/windowSize;
  
- %% Calculate features
+%% Calculate features of the model
  
+% Calculate (1) alpha, (2) beta, (3) standard deviation (4) R-Squared, (5)
+... (5) Sharpe Ratio for EACH window in the dataset
 [features, windowAlpha] = calc_features(ModelReturns, IndexReturns, nWeeks, nWindows, windowSize, nModels); 
 
 %% Calculate the reponse variable
@@ -25,83 +28,59 @@ response = calc_response(windowAlpha, nWindows, nModels);
 
 %% Divide into train and test
 
+% Combine calculated features and responses
 allData = [features, response];
 
-trainData = allData(1:31, :);
+% Set training and test start weeks
+trainStartWindow = 1;
+trainEndWindow = 25;
+testStartWindow = 26;
+testEndWindow = 44;
+
+% Split the data
+trainData = allData(trainStartWindow:trainEndWindow, :);
 trainPred = trainData(:, 1:30);
 trainResp = trainData(:, 31:end);
-
-testData = allData (32:end, :);
+testData = allData (testStartWindow:testEndWindow, :);
 testPred = testData(:, 1:30);
 testResp = testData(:, 31:end);
-%% Initialize NN
 
-hiddenLayerNodes = 50;
-fractionVal = .25;
+%% Train neural network
+
+nHiddenNodes = 50;
+validationFrac = .25;
 maxEpochs = 100;
+NeuralNet = train_neural_net(trainPred, trainResp, nHiddenNodes, validationFrac, maxEpochs);
 
-net = patternnet(hiddenLayerNodes);
-net.divideFcn = 'dividerand';
-net.divideParam.valRatio = fractionVal;
-net.divideParam.trainRatio = 1-fractionVal;
-net.divideParam.testRatio = 0;
-net.trainParam.epochs = maxEpochs; 
+%% Pass test data into the trained neural network
 
-[net, tr] = train(net, transpose(trainPred), transpose(trainResp), 'useParallel','yes');
-neuralNetPredictions = transpose(net(transpose(testPred)));
-
-%% Calculate best model
-
+neuralNetPredictions = transpose(NeuralNet(transpose(testPred)));
 for i = 1:length(neuralNetPredictions)
     [tempMax, bestModelIndex(i , 1)] = max(neuralNetPredictions(i, :));
 end
 
-%% Calculate Average Yearly Test Returns
-fullModelReturns = 1 + ModelReturns;
-fullIndexReturns = 1 + IndexReturns;
+%% Calculate and plot our models returns over all windows 
+plotIsOn = 1; 
+allReturns = calc_returns(ModelReturns, IndexReturns, bestModelIndex, testStartWindow, windowSize, nWeeks, plotIsOn);
 
-darkAlphaReturn = 1.00;
-CZeSD_testRet = 1.00;
-KP_SSD_testRet = 1.00;
-L_SSD_testRet = 1.00;
-LR_ASSD_testRet = 1.00;
-MeanVar_testRet = 1.00;
-RMZ_SSD_testRet = 1.00;
-SP500_testRet = 1.00;
+%% Print the performance of our model, other models, and index performance
 
-currentWindow = 1;
-startTestWindow = 32;
-startTestWeek = (startTestWindow-1) * windowSize + 1;
+% Calculate the number of years we tested over
+nTestYears = (testEndWindow - testStartWindow)/4;
 
-darkAlphaPortChoice = 1;
+% Model vs. Index performance
+fprintf('Our models return was %.4f per year \n', nthroot(allReturns(8), nTestYears) - 1);
+fprintf('Index return was %.4f per year \n', nthroot(allReturns(7), nTestYears) - 1);
 
-for i = startTestWeek:nWeeks - 12;
-    CZeSD_testRet = CZeSD_testRet * fullModelReturns(i,1);
-    KP_SSD_testRet = KP_SSD_testRet * fullModelReturns(i,2);
-    L_SSD_testRet = L_SSD_testRet * fullModelReturns(i,3);
-    LR_ASSD_testRet = LR_ASSD_testRet * fullModelReturns(i,4);
-    MeanVar_testRet = MeanVar_testRet * fullModelReturns(i,5);
-    RMZ_SSD_testRet = RMZ_SSD_testRet * fullModelReturns(i,6);
-    SP500_testRet = SP500_testRet * fullIndexReturns(i, 1); 
-    
-    % Choose portfolio
-    darkAlphaPortChoice = bestModelIndex(currentWindow, 1);
-    darkAlphaReturn = darkAlphaReturn * fullModelReturns(i, darkAlphaPortChoice);    
-    
-    % Increment window
-    if rem(i, windowSize) == 0
-        currentWindow = currentWindow + 1;
-    end
-    
-end
+% Comparison to all other strategies
+fprintf('CZeSD return was %.4f per year \n', nthroot(allReturns(1), nTestYears) - 1);
+fprintf('KP_SSD return was %.4f per year \n', nthroot(allReturns(2), nTestYears) - 1);
+fprintf('L_SSD return was %.4f per year \n', nthroot(allReturns(3), nTestYears) - 1);
+fprintf('LR_ASSD return was %.4f per year \n', nthroot(allReturns(4), nTestYears) - 1);
+fprintf('MeanVar return was %.4f per year \n', nthroot(allReturns(5), nTestYears) - 1);
+fprintf('RMZ_SSD return was %.4f per year \n', nthroot(allReturns(6), nTestYears) - 1);
 
-fprintf('Our models return was %.4f per year \n', nthroot(darkAlphaReturn, 3) - 1);
-fprintf('Index return was %.4f per year \n', nthroot(SP500_testRet, 3) - 1);
-fprintf('CZeSD return was %.4f per year \n', nthroot(CZeSD_testRet, 3) - 1);
-fprintf('KP_SSD return was %.4f per year \n', nthroot(KP_SSD_testRet, 3) - 1);
-fprintf('L_SSD return was %.4f per year \n', nthroot(L_SSD_testRet, 3) - 1);
-fprintf('MeanVar return was %.4f per year \n', nthroot(MeanVar_testRet, 3) - 1);
-fprintf('RMZ_SSD return was %.4f per year \n', nthroot(RMZ_SSD_testRet, 3) - 1);
+disp(bestModelIndex);
 
 
 
