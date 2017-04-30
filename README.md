@@ -3,6 +3,8 @@
 ## Abstract
 We consider the problem of developing a flexible framework for analyzing portfolio behavior and equity market structure. This is important in a variety of problem settings where investment management practitioners wish to learn an optimal portfolio selection strategy. One approach to this is to use stochastic methods that attempt to explain observable phenomena that take place in equity markets without the strong normative assumptions of the Modern Portfolio Theory of Dynamic Asset Pricing (DAP) introduced by Harry Markowitz. However, the descriptive methods of Robert Fernholz’ Stochastic Portfolio Theory (SPT) are not concerned with expected utility maximization. We describe a method for “unifying” several second-order stochastic dominance models that achieve state-of-the-art performance not only with each other but also with classical portfolio theory methods. Namely, we show that a neural network can be trained to identify the optimal portfolio selection method, given certain descriptors of a money-market’s economic condition and the trailing performance of all strategies under consideration. We show our machine learning approach combines portfolio selection models in such that existing individual strategies are out performed while assuming less risk.
 
+To read our full paper, please see [SPT_Learning.pdf](SPT_Learning.pdf).
+
 ## Structure 
 1. *model_master_script.m*
 	* Master script for running and testing the model, calling helper functions 2-6 (detailed below).
