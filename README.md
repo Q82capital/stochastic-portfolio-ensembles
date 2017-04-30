@@ -27,5 +27,5 @@ We consider the problem of developing a flexible framework for analyzing portfol
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Authors
-* **Brett Whitford**  - OSU Department of Electrical and Computer Engineering - [github](https://github.com/PurpleBooth)
-* **Noah H. Bayindirli**  - OSU Department of Electrical and Computer Engineering - [github](https://github.com/PurpleBooth)
+* **Brett Whitford**  - OSU Department of Electrical and Computer Engineering - [github](https://github.com/brett-whitford)
+* **Noah H. Bayindirli**  - OSU Department of Electrical and Computer Engineering - [github](https://github.com/nbayindirli)
