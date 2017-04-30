@@ -6,14 +6,14 @@ We consider the problem of developing a flexible framework for analyzing portfol
 ## Structure 
 1. *model_master_script.m*
 	* Master script for running and testing the model, calling helper functions 2-6 (detailed below).
-	* Use targetAlpha ($\psi$) to set the risk-averseness of the strategy to train.
+	* Use *targetAlpha* to set the risk-averseness of the strategy to train.
 	* Run this script to evaluate performance!
 2. *calc_features.m*
 	* Script for calculating and returning the predictor variables.
 3. *calc_r_squared.m*
 	* Calculates the statistical measure of how close the data are to the fitted regression line
 4. *calc_response.m*
-	* Calculates the response variable in accordance with $\psi$, the user's weekly alpha target.
+	* Calculates the response variable in accordance with the user's weekly alpha target.
 5. *calc_returns.m*
 	* Calculates the returns of all models under consideration.
 6. *train_neural_net.m*
