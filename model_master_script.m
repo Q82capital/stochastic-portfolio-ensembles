@@ -44,7 +44,7 @@ testData = allData (testStartWindow:testEndWindow, :);
 testPred = testData(:, 1:30);
 testResp = testData(:, 31:end);
 
-for test = 1: 100
+for test = 1: 1
 
 %% Train neural network
 nHiddenNodes = 50;
@@ -108,11 +108,11 @@ if ishandle(1)
 end
 figure(1);
 hold on 
-scatter(modelRisks, yearlyReturns, 'g*');
+plot(modelRisks, yearlyReturns, 'k*', 'markers',12);
 lsline
-scatter(ourRisk, ourReturn, 'r*');
-xlabel('Risk');
-ylabel('Return');
+plot(ourRisk, ourReturn, 'r*', 'markers',12);
+xlabel('Assumed Quarterly Risk');
+ylabel('Yearly Return');
 hold off 
-title(test);
+title('Portfolio Performance 2013 - 2015');
 end
