@@ -1,4 +1,4 @@
-function [ NeuralNet ] = train_neural_net(trainPred, trainResp, nHiddenNodes, validationFrac, maxEpochs)
+function [ NeuralNet, trainData ] = train_neural_net(trainPred, trainResp, nHiddenNodes, validationFrac, maxEpochs)
 %UNTITLED8 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -11,7 +11,7 @@ NeuralNet.divideParam.testRatio = 0;
 NeuralNet.trainParam.epochs = maxEpochs; 
 
 % Train the network
-[NeuralNet, ~] = train(NeuralNet, transpose(trainPred), transpose(trainResp), 'useParallel','yes');
+[NeuralNet, trainData] = train(NeuralNet, transpose(trainPred), transpose(trainResp), 'useParallel','yes');
 
 end
 

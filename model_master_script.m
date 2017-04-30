@@ -50,7 +50,7 @@ for test = 1: 1
 nHiddenNodes = 50;
 validationFrac = .25;
 maxEpochs = 100;
-NeuralNet = train_neural_net(trainPred, trainResp, nHiddenNodes, validationFrac, maxEpochs);
+[NeuralNet, trainData] = train_neural_net(trainPred, trainResp, nHiddenNodes, validationFrac, maxEpochs);
 
 %% Pass test data into the trained neural network
 
@@ -91,28 +91,34 @@ ourReturn = nthroot(allReturns(nModels + 2), nTestYears) - 1;
 %% Print the performance of our model, other models, and index performance
 
 % Model performance
-fprintf('Our     return was %.4f per year with risk %.4f \n', ourReturn, ourRisk);
+fprintf('Our     test return was %.4f percent per year with risk %.4f \n', ourReturn, ourRisk);
 
 % Comparison to all other strategies
-fprintf('CZeSD   return was %.4f per year with risk %.4f \n', yearlyReturns(1), modelRisks(1));
-fprintf('KP_SSD  return was %.4f per year with risk %.4f \n', yearlyReturns(2), modelRisks(2));
-fprintf('L_SSD   return was %.4f per year with risk %.4f \n', yearlyReturns(3), modelRisks(3));
-fprintf('LR_ASSD return was %.4f per year with risk %.4f \n', yearlyReturns(4), modelRisks(4));
-fprintf('MeanVar return was %.4f per year with risk %.4f \n', yearlyReturns(5), modelRisks(5));
-fprintf('RMZ_SSD return was %.4f per year with risk %.4f \n', yearlyReturns(6), modelRisks(6));
-fprintf('Index   return was %.4f per year with risk %.4f \n', yearlyReturns(7), modelRisks(7));
+fprintf('CZeSD   test return was %.4f percent per year with risk %.4f \n', yearlyReturns(1), modelRisks(1));
+fprintf('KP_SSD  test return was %.4f percent per year with risk %.4f \n', yearlyReturns(2), modelRisks(2));
+fprintf('L_SSD   test return was %.4f percent per year with risk %.4f \n', yearlyReturns(3), modelRisks(3));
+fprintf('LR_ASSD test return was %.4f percent per year with risk %.4f \n', yearlyReturns(4), modelRisks(4));
+fprintf('MeanVar test return was %.4f percent per year with risk %.4f \n', yearlyReturns(5), modelRisks(5));
+fprintf('RMZ_SSD test return was %.4f percent per year with risk %.4f \n', yearlyReturns(6), modelRisks(6));
+fprintf('Index   test return was %.4f percent per year with risk %.4f \n', yearlyReturns(7), modelRisks(7));
 
-% disp(bestModelIndex);
+% Plot performance comparisons
 if ishandle(1)
     clf(1);
 end
 figure(1);
-hold on 
+hold on
 plot(modelRisks, yearlyReturns, 'k*', 'markers',12);
 lsline
 plot(ourRisk, ourReturn, 'r*', 'markers',12);
+plot(yearlyReturns(7), modelRisks(7), 'g*', 'markers',12);
 xlabel('Assumed Quarterly Risk');
 ylabel('Yearly Return');
+legend('Individual Strategies','Best Fit of Individual Strategies', 'Our Model Performance', 'Benchmark Index Performance')
 hold off 
 title('Portfolio Performance 2013 - 2015');
+
+figure(2);
+plotperform(trainData)
+
 end
