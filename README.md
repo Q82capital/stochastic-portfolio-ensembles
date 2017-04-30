@@ -6,6 +6,7 @@ We consider the problem of developing a flexible framework for analyzing portfol
 ## Structure 
 1. *model_master_script.m*
 	* Master script for running and testing the model, calling helper functions 2-6 (detailed below).
+	* Use targetAlpha ($\psi$) to set the risk-averseness of the strategy to train.
 	* Run this script to evaluate performance!
 2. *calc_features.m*
 	* Script for calculating and returning the predictor variables.
