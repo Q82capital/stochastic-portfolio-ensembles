@@ -1,4 +1,4 @@
-# Risk Parity Revisited: Learning Ensembles of Stochastic Portfolio Selection Models for \\ Quarterly Asset Rebalancing
+# Risk Parity Revisited: Learning Ensembles of Stochastic Portfolio Selection Models for Quarterly Asset Rebalancing
 
 ## Abstract
 We consider the problem of developing a flexible framework for analyzing portfolio behavior and equity market structure. This is important in a variety of problem settings where investment management practitioners wish to learn an optimal portfolio selection strategy. We describe a method for improving the predictive force of stochastic dominance models by introducing a meta-level to the estimation problem. Namely, we show that a neural network can be trained to identify the optimal portfolio selection method for a given quarter, provided descriptors of a money-market’s economic condition and the trailing performance of all strategies under consideration. We show our machine learning approach can ensemble portfolio selection models in such a way that existing individual strategies are outperformed while assuming less risk. 
